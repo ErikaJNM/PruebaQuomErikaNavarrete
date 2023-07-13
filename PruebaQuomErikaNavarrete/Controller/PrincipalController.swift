@@ -33,8 +33,6 @@ class PrincipalController: UIViewController {
         }
     }
     
-
-
     func UIupdate(){
         PrincipalViewModel.GetAll(String(Token.shared.GetTs()), Token.shared.GetApiKey(), Token.shared.GetHash()) { result, error in
             if let resultSource = result {
