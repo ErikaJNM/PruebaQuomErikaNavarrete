@@ -10,6 +10,7 @@ import UIKit
 class PrincipalController: UIViewController {
 
     static var offset : Int = 0
+    @IBOutlet weak var btnRight: UIButton!
     @IBOutlet weak var btnleft: UIButton!
     @IBOutlet weak var itemComics: UICollectionView!
     var result = Root()
@@ -34,21 +35,28 @@ class PrincipalController: UIViewController {
     }
     
     func UIupdate(){
+        btnRight.isHidden = false
+        UIApplication.shared.windows.first?.isUserInteractionEnabled = false
+        comics.removeAll()
         PrincipalViewModel.GetAll(String(Token.shared.GetTs()), Token.shared.GetApiKey(), Token.shared.GetHash()) { result, error in
             if let resultSource = result {
                 for comic in resultSource.data!.results{
                     self.comics.append(comic)
                 }
                 
-                DispatchQueue.main.async {
+                DispatchQueue.main.async{
                     self.itemComics.reloadData()
+                    self.btnRight.isEnabled = true
+                    UIApplication.shared.windows.first?.isUserInteractionEnabled = true
                 }
             }
         }
     }
     
-    
     @IBAction func btnPrevious() {
+        UIApplication.shared.windows.first?.isUserInteractionEnabled = false
+        btnRight.isEnabled = false
+        btnleft.isEnabled = false
         comics.removeAll()
         PrincipalController.offset -= 20
         PrincipalViewModel.GetAll(String(Token.shared.GetTs()), Token.shared.GetApiKey(), Token.shared.GetHash()) { result, error in
@@ -56,14 +64,20 @@ class PrincipalController: UIViewController {
                 for comic in resultSource.data!.results{
                     self.comics.append(comic)
                 }
-                
+            
                 DispatchQueue.main.async {
                     self.itemComics.reloadData()
+                    UIApplication.shared.windows.first?.isUserInteractionEnabled = true
+                    self.btnRight.isEnabled = true
+                    self.btnleft.isEnabled = true
                 }
             }
         }
     }
     @IBAction func btnNext() {
+        UIApplication.shared.windows.first?.isUserInteractionEnabled = false
+        btnRight.isEnabled = false
+        btnleft.isEnabled = false
         comics.removeAll()
         PrincipalController.offset += 20
         PrincipalViewModel.GetAll(String(Token.shared.GetTs()), Token.shared.GetApiKey(), Token.shared.GetHash()) { result, error in
@@ -72,8 +86,11 @@ class PrincipalController: UIViewController {
                     self.comics.append(comic)
                 }
                 
-                DispatchQueue.main.async {
+                DispatchQueue.main.async{
                     self.itemComics.reloadData()
+                    self.btnRight.isEnabled = true
+                    self.btnleft.isEnabled = true
+                    UIApplication.shared.windows.first?.isUserInteractionEnabled = true
                 }
             }
         }
@@ -92,10 +109,25 @@ extension PrincipalController : UICollectionViewDelegate, UICollectionViewDataSo
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = itemComics.dequeueReusableCell(withReuseIdentifier: "ComicsCell", for: indexPath) as! ComicsCell
+        
         cell.lblNombre.text = comics[indexPath.row].title
         
-        let url = URL(string: "\(comics[indexPath.row].thumbnail.path).\(comics[indexPath.row].thumbnail.extention)")
-        cell.imagenComic.load(url: url!)
+        cell.cargandoComic.isHidden = false
+        cell.cargandoComic.startAnimating()
+        cell.imagenComic.isHidden = true
+        
+        if comics.isEmpty {
+            cell.cargandoComic.isHidden = true
+            cell.cargandoComic.stopAnimating()
+            cell.imagenComic.isHidden = false
+            cell.imagenComic.image = UIImage(named: "not_Image")
+        }else{
+            cell.cargandoComic.isHidden = true
+            cell.cargandoComic.stopAnimating()
+            cell.imagenComic.isHidden = false
+            let url = URL(string: "\(comics[indexPath.row].thumbnail.path).\(comics[indexPath.row].thumbnail.extention)")
+             cell.imagenComic.load(url: url!)
+        }
     
         if PrincipalController.offset == 0 {
             btnleft.isHidden = true

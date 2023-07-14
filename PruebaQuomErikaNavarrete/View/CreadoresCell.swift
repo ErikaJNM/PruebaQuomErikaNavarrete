@@ -16,4 +16,5 @@ class CreadoresCell: UICollectionViewCell {
         // Initialization code
     }
 
+    
 }

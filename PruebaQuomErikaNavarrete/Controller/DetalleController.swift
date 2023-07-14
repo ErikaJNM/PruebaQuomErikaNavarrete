@@ -8,6 +8,7 @@
 import UIKit
 
 class DetalleController: UIViewController {
+    @IBOutlet weak var cargando: UIActivityIndicatorView!
     @IBOutlet weak var descripcionComic: UITextView!
     
     @IBOutlet weak var imagenComic: UIImageView!
@@ -23,6 +24,10 @@ class DetalleController: UIViewController {
         itemCreadores.delegate = self
         itemCreadores.dataSource = self
         super.viewDidLoad()
+        
+        imagenComic.isHidden = true
+        cargando.startAnimating()
+        cargando.isHidden = false
         
         UIUpdate()
     }
@@ -44,6 +49,9 @@ class DetalleController: UIViewController {
                     self.lblNombreComic.text = resultSource.data?.results[0].title
                     let url = URL(string: "\(resultSource.data!.results[0].thumbnail.path).\(resultSource.data!.results[0].thumbnail.extention)")
                     self.imagenComic.load(url: url!)
+                    self.cargando.stopAnimating()
+                    self.cargando.isHidden = true
+                    self.imagenComic.isHidden = false
                     self.itemCreadores.reloadData()
                     self.descripcionComic.text = self.text
                 }

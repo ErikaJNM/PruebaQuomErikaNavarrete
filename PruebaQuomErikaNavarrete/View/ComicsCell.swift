@@ -10,6 +10,7 @@ import UIKit
 class ComicsCell: UICollectionViewCell {
     @IBOutlet weak var view: UIView!
     @IBOutlet weak var imagenComic: UIImageView!
+    @IBOutlet weak var cargandoComic: UIActivityIndicatorView!
     
     @IBOutlet weak var lblNombre: UILabel!
     override func awakeFromNib() {
@@ -19,5 +20,10 @@ class ComicsCell: UICollectionViewCell {
         view.layer.cornerRadius = 15
         view.layer.masksToBounds = true
     }
-
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        imagenComic.image = nil
+    }
 }
